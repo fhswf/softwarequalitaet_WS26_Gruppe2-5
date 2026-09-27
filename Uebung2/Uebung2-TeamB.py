@@ -8,7 +8,7 @@ remove_task -> löscht eine Aufgabe per ID
 mark_done -> markiert eine Aufgabe per Namen als erledigt
 show_tasks -> gibt alle Aufgaben in der Konsole aus
 process_tasks -> ändert den Status einer zufälligen Aufgabe
-calculate_tasks -> berechnet den Durchschnitt der IDs(Sinn?)
+calculate_task_average -> berechnet den Durchschnitt der IDs (Sinn?)
 upcoming_tasks -> gibt Aufgaben sortiert nach Name aus
 
 Verständnisprobleme:
@@ -17,8 +17,56 @@ Verständnisprobleme:
     - Bedeutung von task[4] oder task[5] ist nicht erkennbar
 - Unbegründete Kommentare wie "Wichtig! Nicht verändern!"
 - Funktionsnamen sagen nicht immer etwas über die Funktion aus -> process_tasks, cleanup, calculate_task_average etc.
-- Ergenis der Ausgabe der Augaben ist zufällig und nicht eindeutig vorhersehbar
-- Variabeln werden befüllt aber nicht benutzt z.B. backup_tasks, user1
+- Ergebnis der Ausgabe der Aufgaben ist zufällig und nicht eindeutig vorhersehbar
+- Variablen werden befüllt, aber nicht benutzt, z.B. backup_tasks, user1
+
+Aufgabe 2
+Positiv:
+- kleine, kurze Funktionen
+- überwiegend sprechende Variablennamen (due_date, priority)
+- remove_task meldet Erfolg/Misserfolg über Rückgabewert
+- Formatierung überwiegend gut
+- Standardwerte für optionale Parameter (priority, task_id)
+- nutzt Standardbibliotheken (datetime, random)
+
+Negativ:
+1. Struktur
+- globale Variablen statt Klasse
+- tasks -> None statt {}
+- task ist Liste mit Indizes statt dataclass/dict
+2. Lesbarkeit / Doku
+- keine Docstrings, keine Type Hints
+- unbegründete Kommentare "Wichtig! Nicht verändern!"
+- TODO nach return ohne Erklärung, was fehlt
+- magische Werte (Prio 3, random.randint, user1)
+- unnötiges global
+- ungenutzte Schleifenvariable task_id in mark_done
+3. Robustheit / Fehler
+- Datum wird als String verglichen
+- zufällige ID-Vergabe kann zu Fehlern bzw. Überschreiben führen (Kollision)
+- gemischte ID-Typen möglich
+- upcoming_tasks sortiert nach Name und nicht nach Datum, es werden auch erledigte Aufgaben geliefert (Ausgabe ist: "Offene Aufgaben")
+- mark_done -> gibt immer "Erledigt" zurück, auch wenn keine Aufgabe gefunden wurde
+- process_tasks -> zufälliges Umschalten des Status macht keinen Sinn
+- backup_tasks -> speichert Referenzen auf dieselben Listen, kein echtes Backup
+- backup_tasks -> wird bei remove_task nicht aktualisiert
+- cleanup -> löscht Aufgaben ohne Rückmeldung
+- keine Validierung der Eingaben
+4. Wartbarkeit
+- get_task_count sehr kompliziert
+- Vergleich == None statt is None
+- Ausgabeformat (print) fest in der Logik
+
+Verbesserungen:
+- Task als @dataclass mit Feldern name, due_date etc.
+- TaskManager-Klasse statt globaler Variablen
+- fortlaufende IDs statt Zufall
+- upcoming_tasks -> nur offene Aufgaben nach Fälligkeit
+- sprechende Namen verwenden
+- Konstanten für Standardwerte verwenden
+- Eingabevalidierung
+- sinnvolle Kommentare
+
 """
 import datetime
 import random

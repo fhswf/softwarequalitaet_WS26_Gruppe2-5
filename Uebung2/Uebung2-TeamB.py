@@ -69,7 +69,6 @@ Verbesserungen:
 
 """
 import datetime
-import random
 from dataclasses import dataclass, field
 from itertools import count
 
@@ -122,11 +121,12 @@ def remove_task(task_id):
     return False
 
 
-def mark_done(task_name):
-    for task in tasks.values():
-        if task.name == task_name:
-            task.done = True
-    return STATUS_DONE
+def mark_done(task_id):
+    task = tasks.get(task_id)
+    if task is None:
+        return False
+    task.done = True
+    return True
 
 
 def show_tasks():
@@ -137,17 +137,10 @@ def show_tasks():
               f"- bis {due} - {status}")
 
 
-def process_tasks():
-    rand_id = random.choice(list(tasks.keys()))
-    tasks[rand_id].done = not tasks[rand_id].done
-    return False
-    # TODO
-
-
-def calculate_task_average():
-    total = sum(tasks.keys())
-    avg = total / len(tasks) if tasks else 0
-    return avg
+def average_priority():
+    if not tasks:
+        return 0.0
+    return sum(task.priority for task in tasks.values()) / len(tasks)
 
 
 def upcoming_tasks():
@@ -158,28 +151,24 @@ def upcoming_tasks():
                   key=lambda task: (task.due_date, task.priority))
 
 
-def cleanup():
-    temp = {}
-    for task_id, task in tasks.items():
-        if not task.done:
-            temp[task_id] = task
-    if len(temp) == len(tasks):
-        return
-    tasks.clear()
-    tasks.update(temp)
+def remove_done_tasks():
+    done_ids = [task_id for task_id, task in tasks.items() if task.done]
+    for task_id in done_ids:
+        del tasks[task_id]
+    return len(done_ids)
 
 
 def get_task_count():
-    return sum(1 for _ in tasks) if tasks else 0
+    return len(tasks)
 
 
 add_task("Projekt abschließen", "25-05-2027", 1)
-add_task("Einkaufen gehen", "21-05-2027", 3)
+shopping_id = add_task("Einkaufen gehen", "21-05-2027", 3)
 add_task("Dokumentation schreiben", "30-05-2027", 2)
 add_task("Steuererklärung", "31-07-2025", 1)
-mark_done("Einkaufen gehen")
-process_tasks()
+mark_done(shopping_id)
 show_tasks()
 print("Offene Aufgaben nach Datum sortiert:", upcoming_tasks())
-cleanup()
+print("Durchschnittliche Priorität:", average_priority())
+print("Gelöschte erledigte Aufgaben:", remove_done_tasks())
 print("Gesamtzahl der Aufgaben:", get_task_count())

@@ -71,10 +71,7 @@ Verbesserungen:
 import datetime
 import random
 
-# Ü2-A3: Konstanten statt magischer Werte
-
-# Positionen der Felder in einer Aufgaben-Liste
-# (vorher task[0] ... task[5] ohne erkennbare Bedeutung)
+# Indizes der Felder in einer Aufgaben-Liste
 NAME = 0
 DUE_DATE = 1
 PRIORITY = 2
@@ -82,24 +79,20 @@ DONE = 3
 OWNER = 4
 CREATED_AT = 5
 
-# Datumsformate
 DATE_FORMAT = "%d-%m-%Y"
 DATETIME_FORMAT = "%d-%m-%Y %H:%M"
 
-# Prioritäten (Annahme: 1 = wichtig, 3 = unwichtig)
+# 1 = höchste, 3 = niedrigste Priorität
 HIGHEST_PRIORITY = 1
 LOWEST_PRIORITY = 3
 DEFAULT_PRIORITY = LOWEST_PRIORITY
 
 DEFAULT_OWNER = "user1"
 
-# Statustexte für die Ausgabe
 STATUS_DONE = "Erledigt"
 STATUS_OPEN = "Offen"
 
-# Grenzen für den Zufallsanteil der ID. Werte aus dem Original
-# übernommen ("Wichtig! Nicht verändern!"), die ID-Vergabe wird in
-# einem späteren Commit überarbeitet.
+# Zufallsanteil der ID, aus dem Original übernommen
 MIN_ID_OFFSET = 2
 MAX_ID_OFFSET = 7
 
@@ -108,11 +101,11 @@ backup_tasks = {}
 
 
 def add_task(name, due_date, priority=DEFAULT_PRIORITY, task_id=None):
-    global tasks, backup_tasks
+    global tasks
     if tasks is None:
         tasks = {}
 
-    if task_id == None:
+    if task_id is None:
         task_id = len(tasks) + random.randint(MIN_ID_OFFSET, MAX_ID_OFFSET)
     task = [name, due_date, priority, False, DEFAULT_OWNER,
             datetime.datetime.now().strftime(DATETIME_FORMAT)]
@@ -122,7 +115,6 @@ def add_task(name, due_date, priority=DEFAULT_PRIORITY, task_id=None):
 
 
 def remove_task(task_id):
-    global tasks
     if task_id in tasks:
         del tasks[task_id]
         return True
@@ -130,15 +122,13 @@ def remove_task(task_id):
 
 
 def mark_done(task_name):
-    global tasks
-    for task_id, task in tasks.items():
+    for task in tasks.values():
         if task[NAME] == task_name:
             task[DONE] = True
     return STATUS_DONE
 
 
 def show_tasks():
-    global tasks
     for task_id, task in tasks.items():
         status = STATUS_DONE if task[DONE] else STATUS_OPEN
         print(f"{task_id}: {task[NAME]} ({task[PRIORITY]}) "
@@ -168,7 +158,6 @@ def upcoming_tasks():
 
 
 def cleanup():
-    global tasks
     temp = {}
     for task_id, task in tasks.items():
         if not task[DONE]:

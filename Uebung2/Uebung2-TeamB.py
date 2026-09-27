@@ -16,7 +16,8 @@ Verständnisprobleme:
     - task[0]-[5]
     - Bedeutung von task[4] oder task[5] ist nicht erkennbar
 - Unbegründete Kommentare wie "Wichtig! Nicht verändern!"
-- Funktionsnamen sagen nicht immer etwas über die Funktion aus -> process_tasks, cleanup, calculate_task_average etc.
+- Funktionsnamen sagen nicht immer etwas über die Funktion aus
+    -> process_tasks, cleanup, calculate_task_average etc.
 - Ergebnis der Ausgabe der Aufgaben ist zufällig und nicht eindeutig vorhersehbar
 - Variablen werden befüllt, aber nicht benutzt, z.B. backup_tasks, user1
 
@@ -45,7 +46,8 @@ Negativ:
 - Datum wird als String verglichen
 - zufällige ID-Vergabe kann zu Fehlern bzw. Überschreiben führen (Kollision)
 - gemischte ID-Typen möglich
-- upcoming_tasks sortiert nach Name und nicht nach Datum, es werden auch erledigte Aufgaben geliefert (Ausgabe ist: "Offene Aufgaben")
+- upcoming_tasks sortiert nach Name und nicht nach Datum, es werden auch
+    erledigte Aufgaben geliefert (Ausgabe ist: "Offene Aufgaben")
 - mark_done -> gibt immer "Erledigt" zurück, auch wenn keine Aufgabe gefunden wurde
 - process_tasks -> zufälliges Umschalten des Status macht keinen Sinn
 - backup_tasks -> speichert Referenzen auf dieselben Listen, kein echtes Backup
@@ -193,3 +195,16 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+"""
+Aufgabe4: Pylint Output
+************* Module Uebung2-TeamB
+Uebung2-TeamB.py:19:0: C0301: Line too long (117/100) (line-too-long) 
+Uebung2-TeamB.py:48:0: C0301: Line too long (134/100) (line-too-long)
+Uebung2-TeamB.py:195:0: C0304: Final newline missing (missing-final-newline)
+- Alle die Formatierung betreffenden Änderungen werden übernommen
+
+Uebung2-TeamB.py:1:0: C0103: Module name "Uebung2-TeamB" doesn't conform to snake_case naming style (invalid-name)
+- Keine Änderung, da Vorgabe
+-----------------------------------
+Your code has been rated at 9.44/10
+"""

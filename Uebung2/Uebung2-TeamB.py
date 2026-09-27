@@ -70,17 +70,9 @@ Verbesserungen:
 """
 import datetime
 import random
-
-# Indizes der Felder in einer Aufgaben-Liste
-NAME = 0
-DUE_DATE = 1
-PRIORITY = 2
-DONE = 3
-OWNER = 4
-CREATED_AT = 5
+from dataclasses import dataclass, field
 
 DATE_FORMAT = "%d-%m-%Y"
-DATETIME_FORMAT = "%d-%m-%Y %H:%M"
 
 # 1 = höchste, 3 = niedrigste Priorität
 HIGHEST_PRIORITY = 1
@@ -96,6 +88,18 @@ STATUS_OPEN = "Offen"
 MIN_ID_OFFSET = 2
 MAX_ID_OFFSET = 7
 
+
+@dataclass
+class Task:
+    name: str
+    due_date: str
+    priority: int = DEFAULT_PRIORITY
+    done: bool = False
+    owner: str = DEFAULT_OWNER
+    created_at: datetime.datetime = field(
+        default_factory=datetime.datetime.now)
+
+
 tasks = None
 backup_tasks = {}
 
@@ -107,8 +111,7 @@ def add_task(name, due_date, priority=DEFAULT_PRIORITY, task_id=None):
 
     if task_id is None:
         task_id = len(tasks) + random.randint(MIN_ID_OFFSET, MAX_ID_OFFSET)
-    task = [name, due_date, priority, False, DEFAULT_OWNER,
-            datetime.datetime.now().strftime(DATETIME_FORMAT)]
+    task = Task(name, due_date, priority)
     tasks[task_id] = task
     backup_tasks[task_id] = task
     return task_id
@@ -123,21 +126,21 @@ def remove_task(task_id):
 
 def mark_done(task_name):
     for task in tasks.values():
-        if task[NAME] == task_name:
-            task[DONE] = True
+        if task.name == task_name:
+            task.done = True
     return STATUS_DONE
 
 
 def show_tasks():
     for task_id, task in tasks.items():
-        status = STATUS_DONE if task[DONE] else STATUS_OPEN
-        print(f"{task_id}: {task[NAME]} ({task[PRIORITY]}) "
-              f"- bis {task[DUE_DATE]} - {status}")
+        status = STATUS_DONE if task.done else STATUS_OPEN
+        print(f"{task_id}: {task.name} ({task.priority}) "
+              f"- bis {task.due_date} - {status}")
 
 
 def process_tasks():
     rand_id = random.choice(list(tasks.keys()))
-    tasks[rand_id][DONE] = not tasks[rand_id][DONE]
+    tasks[rand_id].done = not tasks[rand_id].done
     return False
     # TODO
 
@@ -151,8 +154,8 @@ def calculate_task_average():
 def upcoming_tasks():
     today = datetime.datetime.now().strftime(DATE_FORMAT)
     upcoming = sorted(
-        [task for task in tasks.values() if task[DUE_DATE] >= today],
-        key=lambda x: x[NAME]
+        [task for task in tasks.values() if task.due_date >= today],
+        key=lambda task: task.name
     )
     return upcoming
 
@@ -160,7 +163,7 @@ def upcoming_tasks():
 def cleanup():
     temp = {}
     for task_id, task in tasks.items():
-        if not task[DONE]:
+        if not task.done:
             temp[task_id] = task
     if len(temp) == len(tasks):
         return

@@ -71,6 +71,7 @@ Verbesserungen:
 import datetime
 import random
 from dataclasses import dataclass, field
+from itertools import count
 
 DATE_FORMAT = "%d-%m-%Y"
 
@@ -84,10 +85,6 @@ DEFAULT_OWNER = "user1"
 STATUS_DONE = "Erledigt"
 STATUS_OPEN = "Offen"
 
-# Zufallsanteil der ID, aus dem Original übernommen
-MIN_ID_OFFSET = 2
-MAX_ID_OFFSET = 7
-
 
 @dataclass
 class Task:
@@ -100,20 +97,13 @@ class Task:
         default_factory=datetime.datetime.now)
 
 
-tasks = None
-backup_tasks = {}
+tasks = {}
+_next_id = count(start=1)
 
 
-def add_task(name, due_date, priority=DEFAULT_PRIORITY, task_id=None):
-    global tasks
-    if tasks is None:
-        tasks = {}
-
-    if task_id is None:
-        task_id = len(tasks) + random.randint(MIN_ID_OFFSET, MAX_ID_OFFSET)
-    task = Task(name, due_date, priority)
-    tasks[task_id] = task
-    backup_tasks[task_id] = task
+def add_task(name, due_date, priority=DEFAULT_PRIORITY):
+    task_id = next(_next_id)
+    tasks[task_id] = Task(name, due_date, priority)
     return task_id
 
 
@@ -175,7 +165,6 @@ def get_task_count():
     return sum(1 for _ in tasks) if tasks else 0
 
 
-add_task("Projekt abschließen", "25-05-2025", 1, task_id="hello")
 add_task("Projekt abschließen", "25-05-2025", 1)
 add_task("Einkaufen gehen", "21-05-2025", 3)
 add_task("Dokumentation schreiben", "30-05-2025", 2)

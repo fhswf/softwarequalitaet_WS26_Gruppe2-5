@@ -71,19 +71,51 @@ Verbesserungen:
 import datetime
 import random
 
+# Ü2-A3: Konstanten statt magischer Werte
+
+# Positionen der Felder in einer Aufgaben-Liste
+# (vorher task[0] ... task[5] ohne erkennbare Bedeutung)
+NAME = 0
+DUE_DATE = 1
+PRIORITY = 2
+DONE = 3
+OWNER = 4
+CREATED_AT = 5
+
+# Datumsformate
+DATE_FORMAT = "%d-%m-%Y"
+DATETIME_FORMAT = "%d-%m-%Y %H:%M"
+
+# Prioritäten (Annahme: 1 = wichtig, 3 = unwichtig)
+HIGHEST_PRIORITY = 1
+LOWEST_PRIORITY = 3
+DEFAULT_PRIORITY = LOWEST_PRIORITY
+
+DEFAULT_OWNER = "user1"
+
+# Statustexte für die Ausgabe
+STATUS_DONE = "Erledigt"
+STATUS_OPEN = "Offen"
+
+# Grenzen für den Zufallsanteil der ID. Werte aus dem Original
+# übernommen ("Wichtig! Nicht verändern!"), die ID-Vergabe wird in
+# einem späteren Commit überarbeitet.
+MIN_ID_OFFSET = 2
+MAX_ID_OFFSET = 7
+
 tasks = None
 backup_tasks = {}
 
 
-def add_task(name, due_date, priority=3, task_id=None):
+def add_task(name, due_date, priority=DEFAULT_PRIORITY, task_id=None):
     global tasks, backup_tasks
     if tasks is None:
         tasks = {}
 
     if task_id == None:
-        task_id = len(tasks) + random.randint(2, 7)  # Wichtig! Nicht verändern!
-    task = [name, due_date, priority, False, "user1",
-            datetime.datetime.now().strftime("%d-%m-%Y %H:%M")]
+        task_id = len(tasks) + random.randint(MIN_ID_OFFSET, MAX_ID_OFFSET)
+    task = [name, due_date, priority, False, DEFAULT_OWNER,
+            datetime.datetime.now().strftime(DATETIME_FORMAT)]
     tasks[task_id] = task
     backup_tasks[task_id] = task
     return task_id
@@ -100,21 +132,22 @@ def remove_task(task_id):
 def mark_done(task_name):
     global tasks
     for task_id, task in tasks.items():
-        if task[0] == task_name:
-            task[3] = True
-    return "Erledigt"
+        if task[NAME] == task_name:
+            task[DONE] = True
+    return STATUS_DONE
 
 
 def show_tasks():
     global tasks
     for task_id, task in tasks.items():
-        print(
-            f"{task_id}: {task[0]} ({task[2]}) - bis {task[1]} - {'Erledigt' if task[3] else 'Offen'}")
+        status = STATUS_DONE if task[DONE] else STATUS_OPEN
+        print(f"{task_id}: {task[NAME]} ({task[PRIORITY]}) "
+              f"- bis {task[DUE_DATE]} - {status}")
 
 
 def process_tasks():
     rand_id = random.choice(list(tasks.keys()))
-    tasks[rand_id][3] = not tasks[rand_id][3]
+    tasks[rand_id][DONE] = not tasks[rand_id][DONE]
     return False
     # TODO
 
@@ -126,10 +159,10 @@ def calculate_task_average():
 
 
 def upcoming_tasks():
-    today = datetime.datetime.now().strftime("%d-%m-%Y")
+    today = datetime.datetime.now().strftime(DATE_FORMAT)
     upcoming = sorted(
-        [task for task in tasks.values() if task[1] >= today],
-        key=lambda x: x[0]
+        [task for task in tasks.values() if task[DUE_DATE] >= today],
+        key=lambda x: x[NAME]
     )
     return upcoming
 
@@ -138,7 +171,7 @@ def cleanup():
     global tasks
     temp = {}
     for task_id, task in tasks.items():
-        if not task[3]:
+        if not task[DONE]:
             temp[task_id] = task
     if len(temp) == len(tasks):
         return

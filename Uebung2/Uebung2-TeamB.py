@@ -89,7 +89,7 @@ STATUS_OPEN = "Offen"
 @dataclass
 class Task:
     name: str
-    due_date: str
+    due_date: datetime.date
     priority: int = DEFAULT_PRIORITY
     done: bool = False
     owner: str = DEFAULT_OWNER
@@ -102,8 +102,16 @@ _next_id = count(start=1)
 
 
 def add_task(name, due_date, priority=DEFAULT_PRIORITY):
+    if not name.strip():
+        raise ValueError("Der Name darf nicht leer sein.")
+    if not HIGHEST_PRIORITY <= priority <= LOWEST_PRIORITY:
+        raise ValueError(f"Priorität muss zwischen {HIGHEST_PRIORITY} "
+                         f"und {LOWEST_PRIORITY} liegen.")
+    # wirft ValueError bei ungültigem Datum oder Format
+    parsed_date = datetime.datetime.strptime(due_date, DATE_FORMAT).date()
+
     task_id = next(_next_id)
-    tasks[task_id] = Task(name, due_date, priority)
+    tasks[task_id] = Task(name, parsed_date, priority)
     return task_id
 
 
@@ -124,8 +132,9 @@ def mark_done(task_name):
 def show_tasks():
     for task_id, task in tasks.items():
         status = STATUS_DONE if task.done else STATUS_OPEN
+        due = task.due_date.strftime(DATE_FORMAT)
         print(f"{task_id}: {task.name} ({task.priority}) "
-              f"- bis {task.due_date} - {status}")
+              f"- bis {due} - {status}")
 
 
 def process_tasks():
@@ -142,12 +151,11 @@ def calculate_task_average():
 
 
 def upcoming_tasks():
-    today = datetime.datetime.now().strftime(DATE_FORMAT)
-    upcoming = sorted(
-        [task for task in tasks.values() if task.due_date >= today],
-        key=lambda task: task.name
-    )
-    return upcoming
+    today = datetime.date.today()
+    open_tasks = [task for task in tasks.values()
+                  if not task.done and task.due_date >= today]
+    return sorted(open_tasks,
+                  key=lambda task: (task.due_date, task.priority))
 
 
 def cleanup():
@@ -165,9 +173,10 @@ def get_task_count():
     return sum(1 for _ in tasks) if tasks else 0
 
 
-add_task("Projekt abschließen", "25-05-2025", 1)
-add_task("Einkaufen gehen", "21-05-2025", 3)
-add_task("Dokumentation schreiben", "30-05-2025", 2)
+add_task("Projekt abschließen", "25-05-2027", 1)
+add_task("Einkaufen gehen", "21-05-2027", 3)
+add_task("Dokumentation schreiben", "30-05-2027", 2)
+add_task("Steuererklärung", "31-07-2025", 1)
 mark_done("Einkaufen gehen")
 process_tasks()
 show_tasks()

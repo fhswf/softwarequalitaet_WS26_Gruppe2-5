@@ -3,7 +3,7 @@
 """
 Aufgabe 1
 Funktion: Aufgabenverwaltung
-add_task -> legt eine Aufgabe an(Name, Fälligkeit, Priorität,ID)
+add_task -> legt eine Aufgabe an (Name, Fälligkeit, Priorität, ID)
 remove_task -> löscht eine Aufgabe per ID
 mark_done -> markiert eine Aufgabe per Namen als erledigt
 show_tasks -> gibt alle Aufgaben in der Konsole aus
@@ -15,7 +15,7 @@ Verständnisprobleme:
 - ein Task ist eine Liste von teilweise magischen Werten
     - task[0]-[5]
     - Bedeutung von task[4] oder task[5] ist nicht erkennbar
-- Unbegründete Kommentare wie "Wichtig! nicht verändern!"
+- Unbegründete Kommentare wie "Wichtig! Nicht verändern!"
 - Funktionsnamen sagen nicht immer etwas über die Funktion aus -> process_tasks, cleanup, calculate_task_average etc.
 - Ergenis der Ausgabe der Augaben ist zufällig und nicht eindeutig vorhersehbar
 - Variabeln werden befüllt aber nicht benutzt z.B. backup_tasks, user1

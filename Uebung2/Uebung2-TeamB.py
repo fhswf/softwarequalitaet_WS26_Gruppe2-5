@@ -87,6 +87,8 @@ STATUS_OPEN = "Offen"
 
 @dataclass
 class Task:
+    """Eine einzelne Aufgabe."""
+
     name: str
     due_date: datetime.date
     priority: int = DEFAULT_PRIORITY
@@ -96,17 +98,23 @@ class Task:
         default_factory=datetime.datetime.now)
 
 
-tasks = {}
+tasks: dict[int, Task] = {}
 _next_id = count(start=1)
 
 
-def add_task(name, due_date, priority=DEFAULT_PRIORITY):
+def add_task(name: str, due_date: str,
+             priority: int = DEFAULT_PRIORITY) -> int:
+    """Legt eine Aufgabe an und gibt ihre ID zurück.
+
+    due_date wird im Format TT-MM-JJJJ erwartet.
+    Wirft ValueError bei leerem Namen, ungültigem Datum
+    oder ungültiger Priorität.
+    """
     if not name.strip():
         raise ValueError("Der Name darf nicht leer sein.")
     if not HIGHEST_PRIORITY <= priority <= LOWEST_PRIORITY:
         raise ValueError(f"Priorität muss zwischen {HIGHEST_PRIORITY} "
                          f"und {LOWEST_PRIORITY} liegen.")
-    # wirft ValueError bei ungültigem Datum oder Format
     parsed_date = datetime.datetime.strptime(due_date, DATE_FORMAT).date()
 
     task_id = next(_next_id)
@@ -114,14 +122,16 @@ def add_task(name, due_date, priority=DEFAULT_PRIORITY):
     return task_id
 
 
-def remove_task(task_id):
+def remove_task(task_id: int) -> bool:
+    """Löscht eine Aufgabe. Gibt True zurück, falls sie existierte."""
     if task_id in tasks:
         del tasks[task_id]
         return True
     return False
 
 
-def mark_done(task_id):
+def mark_done(task_id: int) -> bool:
+    """Markiert eine Aufgabe als erledigt. True, falls gefunden."""
     task = tasks.get(task_id)
     if task is None:
         return False
@@ -129,7 +139,8 @@ def mark_done(task_id):
     return True
 
 
-def show_tasks():
+def print_tasks() -> None:
+    """Gibt alle Aufgaben auf der Konsole aus."""
     for task_id, task in tasks.items():
         status = STATUS_DONE if task.done else STATUS_OPEN
         due = task.due_date.strftime(DATE_FORMAT)
@@ -137,13 +148,15 @@ def show_tasks():
               f"- bis {due} - {status}")
 
 
-def average_priority():
+def average_priority() -> float:
+    """Durchschnittliche Priorität aller Aufgaben (0.0, falls leer)."""
     if not tasks:
         return 0.0
     return sum(task.priority for task in tasks.values()) / len(tasks)
 
 
-def upcoming_tasks():
+def get_upcoming_tasks() -> list[Task]:
+    """Offene Aufgaben ab heute, sortiert nach Datum und Priorität."""
     today = datetime.date.today()
     open_tasks = [task for task in tasks.values()
                   if not task.done and task.due_date >= today]
@@ -151,24 +164,32 @@ def upcoming_tasks():
                   key=lambda task: (task.due_date, task.priority))
 
 
-def remove_done_tasks():
+def remove_done_tasks() -> int:
+    """Löscht alle erledigten Aufgaben und gibt deren Anzahl zurück."""
     done_ids = [task_id for task_id, task in tasks.items() if task.done]
     for task_id in done_ids:
         del tasks[task_id]
     return len(done_ids)
 
 
-def get_task_count():
+def get_task_count() -> int:
+    """Gibt die Anzahl aller Aufgaben zurück."""
     return len(tasks)
 
 
-add_task("Projekt abschließen", "25-05-2027", 1)
-shopping_id = add_task("Einkaufen gehen", "21-05-2027", 3)
-add_task("Dokumentation schreiben", "30-05-2027", 2)
-add_task("Steuererklärung", "31-07-2025", 1)
-mark_done(shopping_id)
-show_tasks()
-print("Offene Aufgaben nach Datum sortiert:", upcoming_tasks())
-print("Durchschnittliche Priorität:", average_priority())
-print("Gelöschte erledigte Aufgaben:", remove_done_tasks())
-print("Gesamtzahl der Aufgaben:", get_task_count())
+def main() -> None:
+    """Beispielhafte Nutzung der Aufgabenverwaltung."""
+    add_task("Projekt abschließen", "25-05-2027", 1)
+    shopping_id = add_task("Einkaufen gehen", "21-05-2027", 3)
+    add_task("Dokumentation schreiben", "30-05-2027", 2)
+    add_task("Steuererklärung", "31-07-2025", 1)
+    mark_done(shopping_id)
+    print_tasks()
+    print("Offene Aufgaben nach Datum sortiert:", get_upcoming_tasks())
+    print("Durchschnittliche Priorität:", average_priority())
+    print("Gelöschte erledigte Aufgaben:", remove_done_tasks())
+    print("Gesamtzahl der Aufgaben:", get_task_count())
+
+
+if __name__ == "__main__":
+    main()

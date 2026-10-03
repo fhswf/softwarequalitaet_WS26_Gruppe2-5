@@ -131,7 +131,7 @@ def cleanup():
 
 
 def get_task_count():
-    return sum(1 for _ in tasks) if tasks else 0
+    return len(tasks) # len statt sum, tasks ist nie mehr None
 
 
 add_task("Projekt abschließen", date(2025, 5, 25), 1) # task_id="hello" entfernt # date statt String

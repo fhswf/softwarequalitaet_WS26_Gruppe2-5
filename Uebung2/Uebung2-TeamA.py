@@ -62,18 +62,31 @@ Verbesserungen:
 - _main_-Block
 """
 import datetime
+# dataclass für benannte Felder
+from dataclasses import dataclass, field
 # random entfernt, wird nicht mehr gebraucht
 from itertools import count
+
+# dataclass mit Feldern statt Liste mit Indizes (task[0], task[3], ...)
+@dataclass
+class Task:
+    """Eine einzelne To-Do-Aufgabe."""
+
+    name: str
+    due_date: str
+    priority: int = 3
+    done: bool = False
+    user: str = "user1"
+    created: str = field(default_factory=lambda: datetime.datetime.now().strftime("%d-%m-%Y %H:%M"))
 
 tasks = {}
 _next_id = count(1) # fortlaufende IDs statt len(tasks) + random
 
 # task_id-Parameter entfernt
+# dataclass initialisiert
 def add_task(name, due_date, priority=3):
     task_id = next(_next_id)
-    task = [name, due_date, priority, False, "user1",
-            datetime.datetime.now().strftime("%d-%m-%Y %H:%M")]
-    tasks[task_id] = task
+    tasks[task_id] = Task(name, due_date, priority) # dataclass initialisieren
     return task_id
 
 
@@ -85,23 +98,17 @@ def remove_task(task_id):
 
 
 def mark_done(task_name):
-    for task_id, task in tasks.values(): # hier wurde keine task_id benutzt
-        if task[0] == task_name:
-            task[3] = True
+    for task in tasks.values(): # hier wurde keine task_id benutzt
+        if task.name == task_name: # Indizes zu Attribute
+            task.done = True # Indizes zu Attribute
     return "Erledigt"
 
 
 def show_tasks():
     for task_id, task in tasks.items():
+        status = "Erledigt" if task.done else "Offen"
         print(
-            f"{task_id}: {task[0]} ({task[2]}) - bis {task[1]} - {'Erledigt' if task[3] else 'Offen'}")
-
-
-def process_tasks():
-    rand_id = random.choice(list(tasks.keys()))
-    tasks[rand_id][3] = not tasks[rand_id][3]
-    return False
-    # TODO
+            f"{task_id}: {task.name} ({task.priority}) - bis {task.due_date} - {status}") # Indizes zu Attribute
 
 
 def calculate_task_average():
@@ -113,8 +120,8 @@ def calculate_task_average():
 def upcoming_tasks():
     today = datetime.datetime.now().strftime("%d-%m-%Y")
     upcoming = sorted(
-        [task for task in tasks.values() if task[1] >= today],
-        key=lambda x: x[0]
+        [task for task in tasks.values() if task.due_date >= today], # Indizes zu Attribute
+        key=lambda task: task.name # Indizes zu Attribute
     )
     return upcoming
 
@@ -122,7 +129,7 @@ def upcoming_tasks():
 def cleanup():
     temp = {}
     for task_id, task in tasks.items():
-        if not task[3]:
+        if not task.done: # Indizes zu Attribute
             temp[task_id] = task
     if len(temp) == len(tasks):
         return
@@ -139,7 +146,6 @@ add_task("Projekt abschließen", "25-05-2025", 1)
 add_task("Einkaufen gehen", "21-05-2025", 3)
 add_task("Dokumentation schreiben", "30-05-2025", 2)
 mark_done("Einkaufen gehen")
-process_tasks()
 show_tasks()
 print("Offene Aufgaben nach Datum sortiert:", upcoming_tasks())
 cleanup()

@@ -118,11 +118,8 @@ def format_tasks(task_id, task):
 def upcoming_tasks():
     """Gibt alle offenen Aufgaben mit Fälligkeit ab heute sortiert nach Datum zurück"""
     today = date.today() # heute als date
-    upcoming = sorted(
-        [task for task in tasks.values() if not task.done and task.due_date >= today], # Indizes zu Attribute # erledigte Aufgaben rausfiltern
-        key=lambda task: task.due_date # Indizes zu Attribute # Sortierung nach Datum
-    )
-    return upcoming
+    upcoming = [(task_id, task) for task_id, task in tasks.items() if not task.done and task.due_date >= today] # Indizes zu Attribute # erledigte Aufgaben rausfiltern # gibt IDs mit zurück, damit Ausgabe format_task nutzt
+    return sorted(upcoming, key=lambda item: item[1].due_date)
 
 # kein vorzeitiges return mehr
 # gibt Anzahl der entfernten Aufgaben zurück
@@ -144,14 +141,18 @@ def main():
     add_task("Projekt abschließen", date(2025, 5, 25), 1) # task_id="hello" entfernt # date statt String
     add_task("Projekt abschließen", date(2025, 5, 25), 1) # date statt String
     add_task("Einkaufen gehen", date(2025, 5, 21), 3) # date statt String
-    add_task("Dokumentation schreiben", date(2025, 5, 30), 2) # date statt String
+    add_task("Dokumentation schreiben", date(2027, 5, 30), 2) # date statt String # Datum erhöht für Ausgabe
     mark_done(3) # ID statt String
 
     # Ausgabe nur noch hier
     for task_id, task in tasks.items():
         print(format_tasks(task_id, task))
 
-    print("Offene Aufgaben nach Datum sortiert:", upcoming_tasks())
+    # Ausgabe über format_task statt liste
+    print("Offene Aufgaben nach Datum sortiert:")
+    for task_id, task in upcoming_tasks():
+        print(" ", format_tasks(task_id, task))
+
     print("Entfernte Aufgaben:", cleanup()) # verbesserte Ausgabe
     print("Gesamtzahl der Aufgaben:", get_task_count())
 

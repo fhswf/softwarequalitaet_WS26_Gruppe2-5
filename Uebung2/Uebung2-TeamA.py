@@ -80,18 +80,20 @@ class Task:
     user: str = "user1"
     created: datetime = field(default_factory=datetime.now) # date statt String
 
-tasks = {}
+tasks: dict[int, Task] = {} # type hint ergänzt
 _next_id = count(1) # fortlaufende IDs statt len(tasks) + random
 
 # task_id-Parameter entfernt
 # dataclass initialisiert
 def add_task(name, due_date, priority=3):
+    """Legt eine neue Aufgabe an und gibt ihre ID zurück"""
     task_id = next(_next_id)
     tasks[task_id] = Task(name, due_date, priority) # dataclass initialisieren
     return task_id
 
 
 def remove_task(task_id):
+    """Entfernt eine Aufgabe und gibt True zurück, wenn sie existierte"""
     if task_id in tasks:
         del tasks[task_id]
         return True
@@ -100,6 +102,7 @@ def remove_task(task_id):
 # Suche über ID statt name
 # Rückgabe bool wie bei remove_task statt immer "Erledigt"
 def mark_done(task_id):
+    """markiert eine Aufgabe als erledigt und gibt True zurück, wenn sie existierte"""
     if task_id not in tasks:
         return False
     tasks[task_id].done = True
@@ -107,11 +110,13 @@ def mark_done(task_id):
 
 # Logik und Ausgabe trennen
 def format_tasks(task_id, task):
+    """Gibt eine Aufgabe als String zurück"""
     status = "Erledigt" if task.done else "Offen"
     return f"{task_id}: {task.name} ({task.priority}) - bis {task.due_date} - {status}"
 
 
 def upcoming_tasks():
+    """Gibt alle offenen Aufgaben mit Fälligkeit ab heute sortiert nach Datum zurück"""
     today = date.today() # heute als date
     upcoming = sorted(
         [task for task in tasks.values() if not task.done and task.due_date >= today], # Indizes zu Attribute # erledigte Aufgaben rausfiltern
@@ -122,6 +127,7 @@ def upcoming_tasks():
 # kein vorzeitiges return mehr
 # gibt Anzahl der entfernten Aufgaben zurück
 def cleanup():
+    """Entfernt alle erledigten Aufgaben und gibt die Anzahl der entfernten Aufgaben zurück"""
     done_ids = [task_id for task_id, task in tasks.items() if task.done]
     for task_id in done_ids:
         del tasks[task_id]
@@ -129,10 +135,12 @@ def cleanup():
 
 
 def get_task_count():
+    """Gibt die Anzahl aller Aufgaben zurück"""
     return len(tasks) # len statt sum, tasks ist nie mehr None
 
 # Aufrufe in main(), damit beim Import nicht ausgeführt
 def main():
+    """Kleines Beispielprogramm"""
     add_task("Projekt abschließen", date(2025, 5, 25), 1) # task_id="hello" entfernt # date statt String
     add_task("Projekt abschließen", date(2025, 5, 25), 1) # date statt String
     add_task("Einkaufen gehen", date(2025, 5, 21), 3) # date statt String

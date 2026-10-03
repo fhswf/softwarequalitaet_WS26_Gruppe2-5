@@ -105,12 +105,10 @@ def mark_done(task_id):
     tasks[task_id].done = True
     return True
 
-
-def show_tasks():
-    for task_id, task in tasks.items():
-        status = "Erledigt" if task.done else "Offen"
-        print(
-            f"{task_id}: {task.name} ({task.priority}) - bis {task.due_date} - {status}") # Indizes zu Attribute
+# Logik und Ausgabe trennen
+def format_tasks(task_id, task):
+    status = "Erledigt" if task.done else "Offen"
+    return f"{task_id}: {task.name} ({task.priority}) - bis {task.due_date} - {status}"
 
 
 def upcoming_tasks():
@@ -133,13 +131,21 @@ def cleanup():
 def get_task_count():
     return len(tasks) # len statt sum, tasks ist nie mehr None
 
+# Aufrufe in main(), damit beim Import nicht ausgeführt
+def main():
+    add_task("Projekt abschließen", date(2025, 5, 25), 1) # task_id="hello" entfernt # date statt String
+    add_task("Projekt abschließen", date(2025, 5, 25), 1) # date statt String
+    add_task("Einkaufen gehen", date(2025, 5, 21), 3) # date statt String
+    add_task("Dokumentation schreiben", date(2025, 5, 30), 2) # date statt String
+    mark_done(3) # ID statt String
 
-add_task("Projekt abschließen", date(2025, 5, 25), 1) # task_id="hello" entfernt # date statt String
-add_task("Projekt abschließen", date(2025, 5, 25), 1) # date statt String
-add_task("Einkaufen gehen", date(2025, 5, 21), 3) # date statt String
-add_task("Dokumentation schreiben", date(2025, 5, 30), 2) # date statt String
-mark_done("Einkaufen gehen")
-show_tasks()
-print("Offene Aufgaben nach Datum sortiert:", upcoming_tasks())
-cleanup()
-print("Gesamtzahl der Aufgaben:", get_task_count())
+    # Ausgabe nur noch hier
+    for task_id, task in tasks.items():
+        print(format_tasks(task_id, task))
+
+    print("Offene Aufgaben nach Datum sortiert:", upcoming_tasks())
+    print("Entfernte Aufgaben:", cleanup()) # verbesserte Ausgabe
+    print("Gesamtzahl der Aufgaben:", get_task_count())
+
+if __name__ == "__main__":
+    main()

@@ -112,12 +112,6 @@ def show_tasks():
             f"{task_id}: {task.name} ({task.priority}) - bis {task.due_date} - {status}") # Indizes zu Attribute
 
 
-def calculate_task_average():
-    total = sum(tasks.keys())
-    avg = total / len(tasks) if tasks else 0
-    return avg
-
-
 def upcoming_tasks():
     today = date.today() # heute als date
     upcoming = sorted(

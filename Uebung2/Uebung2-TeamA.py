@@ -1,3 +1,31 @@
+"""
+MXMR, CNStS
+"""
+"""
+Aufgabe 1
+
+To-Do-Programm, Aufgaben liegen im globalen Dictionary tasks (ID -> Liste).
+- add_task: Aufgabe anlegen, ID wird ggf. zufällig erzeugt
+- remove_task: Aufgabe per ID löschen
+- mark_done: Aufgabe per Name als erledigt markieren
+- show_tasks: alle Aufgaben ausgeben
+- process_tasks: Status einer zufälligen Aufgabe umdrehen
+- calculate_task_average: Mittelwert der IDs (wird nie aufgerufen)
+- upcoming_tasks: anstehende Aufgaben, sortiert nach Name
+- cleanup: erledigte Aufgaben löschen
+- get_task_count: Anzahl der Aufgaben
+
+Was das Verständnis erschwert:
+- Aufgaben sind Listen, man muss nachschauen was task[0], task[3] usw. bedeutet
+- tasks startet als None, erst add_task macht ein Dictionary daraus
+- ID-Erzeugung mit random und "Wichtig! Nicht verändern!" ohne Begründung
+- IDs mal String ("hello"), mal int
+- process_tasks: Name nichtssagend, gibt immer False zurück, TODO ohne Erklärung
+- mark_done sucht über den Namen, gibt immer "Erledigt" zurück
+- Ausgabe sagt "nach Datum sortiert", sortiert wird nach Name
+- backup_tasks und "user1" werden nie benutzt
+- keine Docstrings, keine Type Hints
+"""
 import datetime
 import random
 

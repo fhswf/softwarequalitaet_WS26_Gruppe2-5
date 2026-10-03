@@ -26,6 +26,41 @@ Was das Verständnis erschwert:
 - backup_tasks und "user1" werden nie benutzt
 - keine Docstrings, keine Type Hints
 """
+"""
+Aufgabe 2
+
+Positiv:
+- kleine Funktionen mit meist sprechenden Namen
+- remove_task gibt True/False zurück
+- sinnvolle Default-Parameter (priority=3, task_id=None)
+
+Negativ:
+- random-ID kann eine vorhandene ID treffen, alte Aufgabe wird dann überschrieben
+- Datum als String TT-MM-JJJJ verglichen, "30-05-2025" >= "27-09-2026" ist True
+- upcoming_tasks liefert auch erledigte Aufgaben
+- calculate_task_average stürzt wegen der ID "hello" ab (TypeError) sofern sie aufgerufen würde
+- ohne vorheriges add_task stürzen fast alle Funktionen ab (tasks = None)
+- backup_tasks teilt dieselben Listen, ist also kein Backup
+- globaler Zustand und random machen das Testen schwer
+- uneinheitliche Rückgabewerte (str, bool, None, immer False)
+- global auch dort, wo tasks gar nicht neu zugewiesen wird
+- Logik und Ausgabe vermischt (show_tasks druckt direkt)
+- == None statt is None, sum(1 for _ in tasks) statt len(tasks)
+- Aufrufe am Ende nicht unter if _name_ == "_main_":
+
+Verbesserungen:
+- dataclass statt Liste für Aufgaben
+- datetime.date statt String fürs Datum
+- fortlaufende IDs statt random
+- tasks direkt als {} initialisieren
+- mark_done über ID 
+- upcoming_tasks nach Datum sortieren und erledigte rausfiltern
+- unnötigen Code entfernen (backup_tasks, calculate_task_average)
+- Logik und Ausgabe trennen
+- einheitliche Rückgabewerte
+- Docstrings und Type Hints ergänzen
+- _main_-Block
+"""
 import datetime
 import random
 

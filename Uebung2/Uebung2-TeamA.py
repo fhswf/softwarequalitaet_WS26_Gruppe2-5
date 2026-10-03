@@ -74,21 +74,26 @@ class Task:
     """Eine einzelne To-Do-Aufgabe."""
 
     name: str
-    due_date: date # date statt String
+    # date statt String
+    due_date: date
     priority: int = 3
     done: bool = False
     user: str = "user1"
-    created: datetime = field(default_factory=datetime.now) # date statt String
+    # date statt String
+    created: datetime = field(default_factory=datetime.now)
 
-tasks: dict[int, Task] = {} # type hint ergänzt
-_next_id = count(1) # fortlaufende IDs statt len(tasks) + random
+# type hint ergänzt
+tasks: dict[int, Task] = {}
+# fortlaufende IDs statt len(tasks) + random
+_next_id = count(1)
 
 # task_id-Parameter entfernt
 # dataclass initialisiert
 def add_task(name, due_date, priority=3):
     """Legt eine neue Aufgabe an und gibt ihre ID zurück"""
     task_id = next(_next_id)
-    tasks[task_id] = Task(name, due_date, priority) # dataclass initialisieren
+    # dataclass initialisieren
+    tasks[task_id] = Task(name, due_date, priority)
     return task_id
 
 
@@ -117,8 +122,12 @@ def format_tasks(task_id, task):
 
 def upcoming_tasks():
     """Gibt alle offenen Aufgaben mit Fälligkeit ab heute sortiert nach Datum zurück"""
-    today = date.today() # heute als date
-    upcoming = [(task_id, task) for task_id, task in tasks.items() if not task.done and task.due_date >= today] # Indizes zu Attribute # erledigte Aufgaben rausfiltern # gibt IDs mit zurück, damit Ausgabe format_task nutzt
+    # heute als date
+    today = date.today()
+    # Indizes zu Attribute
+    # erledigte Aufgaben rausfiltern
+    # gibt IDs mit zurück, damit Ausgabe format_task nutzt
+    upcoming = [(task_id, task) for task_id, task in tasks.items() if not task.done and task.due_date >= today]
     return sorted(upcoming, key=lambda item: item[1].due_date)
 
 # kein vorzeitiges return mehr
@@ -133,16 +142,24 @@ def cleanup():
 
 def get_task_count():
     """Gibt die Anzahl aller Aufgaben zurück"""
-    return len(tasks) # len statt sum, tasks ist nie mehr None
+    # len statt sum, tasks ist nie mehr None
+    return len(tasks)
 
 # Aufrufe in main(), damit beim Import nicht ausgeführt
 def main():
     """Kleines Beispielprogramm"""
-    add_task("Projekt abschließen", date(2025, 5, 25), 1) # task_id="hello" entfernt # date statt String
-    add_task("Projekt abschließen", date(2025, 5, 25), 1) # date statt String
-    add_task("Einkaufen gehen", date(2025, 5, 21), 3) # date statt String
-    add_task("Dokumentation schreiben", date(2027, 5, 30), 2) # date statt String # Datum erhöht für Ausgabe
-    mark_done(3) # ID statt String
+    # task_id="hello" entfernt
+    # date statt String
+    add_task("Projekt abschließen", date(2025, 5, 25), 1)
+    # date statt String
+    add_task("Projekt abschließen", date(2025, 5, 25), 1)
+    # date statt String
+    add_task("Einkaufen gehen", date(2025, 5, 21), 3)
+    # date statt String
+    # Datum erhöht für Ausgabe
+    add_task("Dokumentation schreiben", date(2027, 5, 30), 2)
+    # ID statt String
+    mark_done(3)
 
     # Ausgabe nur noch hier
     for task_id, task in tasks.items():
@@ -153,7 +170,8 @@ def main():
     for task_id, task in upcoming_tasks():
         print(" ", format_tasks(task_id, task))
 
-    print("Entfernte Aufgaben:", cleanup()) # verbesserte Ausgabe
+    # verbesserte Ausgabe
+    print("Entfernte Aufgaben:", cleanup())
     print("Gesamtzahl der Aufgaben:", get_task_count())
 
 if __name__ == "__main__":

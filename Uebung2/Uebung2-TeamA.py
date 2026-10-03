@@ -64,7 +64,7 @@ Verbesserungen:
 import datetime
 import random
 
-tasks = None
+tasks = {}
 
 
 def add_task(name, due_date, priority=3, task_id=None):
@@ -81,7 +81,6 @@ def add_task(name, due_date, priority=3, task_id=None):
 
 
 def remove_task(task_id):
-    global tasks
     if task_id in tasks:
         del tasks[task_id]
         return True
@@ -89,7 +88,6 @@ def remove_task(task_id):
 
 
 def mark_done(task_name):
-    global tasks
     for task_id, task in tasks.items():
         if task[0] == task_name:
             task[3] = True
@@ -97,7 +95,6 @@ def mark_done(task_name):
 
 
 def show_tasks():
-    global tasks
     for task_id, task in tasks.items():
         print(
             f"{task_id}: {task[0]} ({task[2]}) - bis {task[1]} - {'Erledigt' if task[3] else 'Offen'}")
@@ -126,7 +123,6 @@ def upcoming_tasks():
 
 
 def cleanup():
-    global tasks
     temp = {}
     for task_id, task in tasks.items():
         if not task[3]:

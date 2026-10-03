@@ -121,16 +121,13 @@ def upcoming_tasks():
     )
     return upcoming
 
-
+# kein vorzeitiges return mehr
+# gibt Anzahl der entfernten Aufgaben zurück
 def cleanup():
-    temp = {}
-    for task_id, task in tasks.items():
-        if not task.done: # Indizes zu Attribute
-            temp[task_id] = task
-    if len(temp) == len(tasks):
-        return
-    tasks.clear()
-    tasks.update(temp)
+    done_ids = [task_id for task_id, task in tasks.items() if task.done]
+    for task_id in done_ids:
+        del tasks[task_id]
+    return len(done_ids)
 
 
 def get_task_count():

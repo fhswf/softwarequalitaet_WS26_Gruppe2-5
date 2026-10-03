@@ -65,11 +65,10 @@ import datetime
 import random
 
 tasks = None
-backup_tasks = {}
 
 
 def add_task(name, due_date, priority=3, task_id=None):
-    global tasks, backup_tasks
+    global tasks
     if tasks is None:
         tasks = {}
 
@@ -78,7 +77,6 @@ def add_task(name, due_date, priority=3, task_id=None):
     task = [name, due_date, priority, False, "user1",
             datetime.datetime.now().strftime("%d-%m-%Y %H:%M")]
     tasks[task_id] = task
-    backup_tasks[task_id] = task
     return task_id
 
 

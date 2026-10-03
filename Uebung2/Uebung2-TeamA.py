@@ -61,7 +61,8 @@ Verbesserungen:
 - Docstrings und Type Hints ergänzen
 - _main_-Block
 """
-import datetime
+# einzelne imports statt komplette Modul
+from datetime import datetime, date
 # dataclass für benannte Felder
 from dataclasses import dataclass, field
 # random entfernt, wird nicht mehr gebraucht
@@ -73,11 +74,11 @@ class Task:
     """Eine einzelne To-Do-Aufgabe."""
 
     name: str
-    due_date: str
+    due_date: date # date statt String
     priority: int = 3
     done: bool = False
     user: str = "user1"
-    created: str = field(default_factory=lambda: datetime.datetime.now().strftime("%d-%m-%Y %H:%M"))
+    created: datetime = field(default_factory=datetime.now) # date statt String
 
 tasks = {}
 _next_id = count(1) # fortlaufende IDs statt len(tasks) + random
@@ -118,7 +119,7 @@ def calculate_task_average():
 
 
 def upcoming_tasks():
-    today = datetime.datetime.now().strftime("%d-%m-%Y")
+    today = date.today() # heute als date
     upcoming = sorted(
         [task for task in tasks.values() if task.due_date >= today], # Indizes zu Attribute
         key=lambda task: task.name # Indizes zu Attribute
@@ -141,10 +142,10 @@ def get_task_count():
     return sum(1 for _ in tasks) if tasks else 0
 
 
-add_task("Projekt abschließen", "25-05-2025", 1) # task_id="hello" entfernt
-add_task("Projekt abschließen", "25-05-2025", 1)
-add_task("Einkaufen gehen", "21-05-2025", 3)
-add_task("Dokumentation schreiben", "30-05-2025", 2)
+add_task("Projekt abschließen", date(2025, 5, 25), 1) # task_id="hello" entfernt # date statt String
+add_task("Projekt abschließen", date(2025, 5, 25), 1) # date statt String
+add_task("Einkaufen gehen", date(2025, 5, 21), 3) # date statt String
+add_task("Dokumentation schreiben", date(2025, 5, 30), 2) # date statt String
 mark_done("Einkaufen gehen")
 show_tasks()
 print("Offene Aufgaben nach Datum sortiert:", upcoming_tasks())

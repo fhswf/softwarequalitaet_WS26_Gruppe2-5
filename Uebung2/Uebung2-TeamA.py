@@ -97,12 +97,13 @@ def remove_task(task_id):
         return True
     return False
 
-
-def mark_done(task_name):
-    for task in tasks.values(): # hier wurde keine task_id benutzt
-        if task.name == task_name: # Indizes zu Attribute
-            task.done = True # Indizes zu Attribute
-    return "Erledigt"
+# Suche über ID statt name
+# Rückgabe bool wie bei remove_task statt immer "Erledigt"
+def mark_done(task_id):
+    if task_id not in tasks:
+        return False
+    tasks[task_id].done = True
+    return True
 
 
 def show_tasks():

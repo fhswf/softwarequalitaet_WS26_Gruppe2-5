@@ -62,18 +62,15 @@ Verbesserungen:
 - _main_-Block
 """
 import datetime
-import random
+# random entfernt, wird nicht mehr gebraucht
+from itertools import count
 
 tasks = {}
+_next_id = count(1) # fortlaufende IDs statt len(tasks) + random
 
-
-def add_task(name, due_date, priority=3, task_id=None):
-    global tasks
-    if tasks is None:
-        tasks = {}
-
-    if task_id == None:
-        task_id = len(tasks) + random.randint(2, 7)  # Wichtig! Nicht verändern!
+# task_id-Parameter entfernt
+def add_task(name, due_date, priority=3):
+    task_id = next(_next_id)
     task = [name, due_date, priority, False, "user1",
             datetime.datetime.now().strftime("%d-%m-%Y %H:%M")]
     tasks[task_id] = task
@@ -88,7 +85,7 @@ def remove_task(task_id):
 
 
 def mark_done(task_name):
-    for task_id, task in tasks.items():
+    for task_id, task in tasks.values(): # hier wurde keine task_id benutzt
         if task[0] == task_name:
             task[3] = True
     return "Erledigt"
@@ -137,7 +134,7 @@ def get_task_count():
     return sum(1 for _ in tasks) if tasks else 0
 
 
-add_task("Projekt abschließen", "25-05-2025", 1, task_id="hello")
+add_task("Projekt abschließen", "25-05-2025", 1) # task_id="hello" entfernt
 add_task("Projekt abschließen", "25-05-2025", 1)
 add_task("Einkaufen gehen", "21-05-2025", 3)
 add_task("Dokumentation schreiben", "30-05-2025", 2)

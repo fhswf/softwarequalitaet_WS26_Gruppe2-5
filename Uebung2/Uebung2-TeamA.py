@@ -121,7 +121,7 @@ def calculate_task_average():
 def upcoming_tasks():
     today = date.today() # heute als date
     upcoming = sorted(
-        [task for task in tasks.values() if task.due_date >= today], # Indizes zu Attribute
+        [task for task in tasks.values() if not task.done and task.due_date >= today], # Indizes zu Attribute # erledigte Aufgaben rausfiltern
         key=lambda task: task.name # Indizes zu Attribute
     )
     return upcoming

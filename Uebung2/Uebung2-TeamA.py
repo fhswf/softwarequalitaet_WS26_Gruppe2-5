@@ -78,7 +78,7 @@ class Task:
     due_date: date
     priority: int = 3
     done: bool = False
-    user: str = "user1"
+    # unnötigen User entfernt
     # date statt String
     created: datetime = field(default_factory=datetime.now)
 

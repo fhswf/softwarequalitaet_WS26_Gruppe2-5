@@ -82,22 +82,23 @@ class Task:
     # date statt String
     created: datetime = field(default_factory=datetime.now)
 
-# type hint ergänzt
+# task initialisiert
 tasks: dict[int, Task] = {}
 # fortlaufende IDs statt len(tasks) + random
 _next_id = count(1)
 
 # task_id-Parameter entfernt
 # dataclass initialisiert
-def add_task(name, due_date, priority=3):
+# type hints hinzugefügt
+def add_task(name, due_date, priority=3) -> int:
     """Legt eine neue Aufgabe an und gibt ihre ID zurück"""
     task_id = next(_next_id)
     # dataclass initialisieren
     tasks[task_id] = Task(name, due_date, priority)
     return task_id
 
-
-def remove_task(task_id):
+# type hints hinzugefügt
+def remove_task(task_id) -> bool:
     """Entfernt eine Aufgabe und gibt True zurück, wenn sie existierte"""
     if task_id in tasks:
         del tasks[task_id]
@@ -106,7 +107,8 @@ def remove_task(task_id):
 
 # Suche über ID statt name
 # Rückgabe bool wie bei remove_task statt immer "Erledigt"
-def mark_done(task_id):
+# type hints hinzugefügt
+def mark_done(task_id) -> bool:
     """markiert eine Aufgabe als erledigt und gibt True zurück, wenn sie existierte"""
     if task_id not in tasks:
         return False
@@ -114,13 +116,14 @@ def mark_done(task_id):
     return True
 
 # Logik und Ausgabe trennen
-def format_tasks(task_id, task):
+# type hints hinzugefügt
+def format_tasks(task_id, task) -> str:
     """Gibt eine Aufgabe als String zurück"""
     status = "Erledigt" if task.done else "Offen"
     return f"{task_id}: {task.name} ({task.priority}) - bis {task.due_date} - {status}"
 
-
-def upcoming_tasks():
+# type hints hinzugefügt
+def upcoming_tasks() -> list[tuple[int, Task]]:
     """Gibt alle offenen Aufgaben mit Fälligkeit ab heute sortiert nach Datum zurück"""
     # heute als date
     today = date.today()
@@ -132,7 +135,8 @@ def upcoming_tasks():
 
 # kein vorzeitiges return mehr
 # gibt Anzahl der entfernten Aufgaben zurück
-def cleanup():
+# type hints hinzugefügt
+def cleanup() -> int:
     """Entfernt alle erledigten Aufgaben und gibt die Anzahl der entfernten Aufgaben zurück"""
     done_ids = [task_id for task_id, task in tasks.items() if task.done]
     for task_id in done_ids:
@@ -140,7 +144,7 @@ def cleanup():
     return len(done_ids)
 
 
-def get_task_count():
+def get_task_count() -> int:
     """Gibt die Anzahl aller Aufgaben zurück"""
     # len statt sum, tasks ist nie mehr None
     return len(tasks)

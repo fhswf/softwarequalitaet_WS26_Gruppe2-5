@@ -82,6 +82,16 @@ class Task:
     # date statt String
     created: datetime = field(default_factory=datetime.now)
 
+    # Eingaben prüfen, damit falsche Typen nicht erst später in upcoming_tasks abstürzen
+    def __post_init__(self):
+        """Prüft die Eingaben direkt beim Anlegen der Aufgabe"""
+        if not self.name:
+            raise ValueError("name darf nicht leer sein")
+        if not isinstance(self.due_date, date) or isinstance(self.due_date, datetime):
+            raise TypeError("due_date muss ein datetime.date sein")
+        if self.priority not in (1, 2, 3):
+            raise ValueError("priority muss 1, 2 oder 3 sein")
+
 # task initialisiert
 tasks: dict[int, Task] = {}
 # fortlaufende IDs statt len(tasks) + random
@@ -91,10 +101,15 @@ _next_id = count(1)
 # dataclass initialisiert
 # type hints hinzugefügt
 def add_task(name, due_date, priority=3) -> int:
-    """Legt eine neue Aufgabe an und gibt ihre ID zurück"""
-    task_id = next(_next_id)
+    """Legt eine neue Aufgabe an und gibt ihre ID zurück
+       Wirft ValueError bei leerem Namen oder ungültiger Priorität,
+       TypeError wenn due_date kein date ist.
+    """
     # dataclass initialisieren
-    tasks[task_id] = Task(name, due_date, priority)
+    task = Task(name, due_date, priority)
+    task_id = next(_next_id)
+    # task_id erst nach initialisierung setzen
+    tasks[task_id] = task
     return task_id
 
 # type hints hinzugefügt

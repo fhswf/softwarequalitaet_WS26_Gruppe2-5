@@ -195,3 +195,25 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+"""
+************* Module Uebung2-TeamA
+Uebung2-TeamA.py:148:0: C0301: Line too long (111/100) (line-too-long): 
+    Zustimmung: zwei Bedingungen in einer Zeile ist schwer zu lesen     
+Uebung2-TeamA.py:1:0: C0103: Module name "Uebung2-TeamA" doesn't conform to snake_case naming style (invalid-name)
+    Zustimmung: ist aber von der README.md vorgegeben
+Uebung2-TeamA.py:4:0: W0105: String statement has no effect (pointless-string-statement):
+    Zustimmung: Nur der erste ist ein Modul-Docstring. Die anderen beiden werden ignoriert
+Uebung2-TeamA.py:29:0: W0105: String statement has no effect (pointless-string-statement):
+    Zustimmung: Nur der erste ist ein Modul-Docstring. Die anderen beiden werden ignoriert
+Uebung2-TeamA.py:65:0: C0413: Import "from datetime import datetime, date" should be placed at the top of the module (wrong-import-position)
+    Zustimmung: ist aber Folgefehler durch Aufgabenstellung
+Uebung2-TeamA.py:67:0: C0413: Import "from dataclasses import dataclass, field" should be placed at the top of the module (wrong-import-position)
+    Zustimmung: ist aber Folgefehler durch Aufgabenstellung
+Uebung2-TeamA.py:69:0: C0413: Import "from itertools import count" should be placed at the top of the module (wrong-import-position)
+    Zustimmung: ist aber Folgefehler durch Aufgabenstellung
+
+------------------------------------------------------------------
+Your code has been rated at 8.91/10 (previous run: 8.62/10, +0.29)
+"""

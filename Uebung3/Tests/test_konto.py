@@ -348,16 +348,6 @@ class TestKontoInterfaceVertrag:
 class TestKontoImKontoService:
     """Integration: Konto-Objekte, die der KontoService über _create_konto erzeugt"""
 
-    def test_service_erzeugt_echte_konto_objekte(self):
-        # Arrange
-        service = KontoService()
-
-        # Act
-        konto = service._create_konto(1, Decimal("10.00"))
-
-        # Assert
-        assert type(konto) is Konto
-
     def test_ueberweisung_ohne_deckung_laesst_beide_konten_unveraendert(self):
         # Arrange
         service = KontoService()

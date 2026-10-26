@@ -1,4 +1,4 @@
-#SNSK, PLRS
+# Implementiert von: SNSK, PLRS
 """
 Tests für die KontoService-Klasse (Test-After Approach)
 =======================================================
@@ -48,7 +48,13 @@ UNGUELTIGE_BETRAEGE = [
     10.0,          # float statt Decimal
     "10.00",       # String statt Decimal
     Decimal("NaN"),
+    Decimal("Infinity"),
+    Decimal("-0.01"),
+    10,            # int statt Decimal
+    None,
 ]
+
+UNGUELTIGE_KONTO_IDS = ["1", None, True]
 
 
 class TestKontoServiceErstellung:
@@ -143,6 +149,21 @@ class TestKontoVerwaltung:
         # Assert
         assert service.konten_auflisten() == []
 
+    @pytest.mark.parametrize("saldo", [Decimal("NaN"), Decimal("Infinity")])
+    def test_konto_erstellen_mit_nicht_endlichem_saldo_wirft_value_error(self, service, saldo):
+        # Act / Assert
+        with pytest.raises(ValueError):
+            service.konto_erstellen(saldo)
+
+    @pytest.mark.parametrize("saldo", [Decimal("NaN"), Decimal("Infinity")])
+    def test_konto_erstellen_mit_nicht_endlichem_saldo_legt_kein_konto_an(self, service, saldo):
+        # Act
+        with pytest.raises(ValueError):
+            service.konto_erstellen(saldo)
+
+        # Assert
+        assert service.konten_auflisten() == []
+
     def test_konten_auflisten_liefert_id_und_saldo(self, service):
         # Arrange
         service.konto_erstellen(Decimal("42.00"))
@@ -206,6 +227,12 @@ class TestTransaktionen:
         with pytest.raises(ValueError):
             service_mit_zwei_konten.einzahlen(1, betrag)
 
+    @pytest.mark.parametrize("konto_id", UNGUELTIGE_KONTO_IDS)
+    def test_einzahlen_mit_ungueltiger_konto_id_wirft_value_error(self, service_mit_zwei_konten, konto_id):
+        # Act / Assert
+        with pytest.raises(ValueError):
+            service_mit_zwei_konten.einzahlen(konto_id, Decimal("10.00"))
+
     # --- auszahlen ---
 
     def test_auszahlen_reduziert_saldo(self, service_mit_zwei_konten):
@@ -245,6 +272,12 @@ class TestTransaktionen:
         # Act / Assert
         with pytest.raises(ValueError):
             service_mit_zwei_konten.auszahlen(1, betrag)
+
+    @pytest.mark.parametrize("konto_id", UNGUELTIGE_KONTO_IDS)
+    def test_auszahlen_mit_ungueltiger_konto_id_wirft_value_error(self, service_mit_zwei_konten, konto_id):
+        # Act / Assert
+        with pytest.raises(ValueError):
+            service_mit_zwei_konten.auszahlen(konto_id, Decimal("10.00"))
 
     # --- ueberweisen ---
 
@@ -343,6 +376,22 @@ class TestTransaktionen:
         # Act / Assert
         with pytest.raises(RuntimeError):
             service_mit_zwei_konten.einziehen(2, 1, Decimal("60.00"))
+
+    def test_einziehen_bei_unzureichendem_saldo_aendert_keine_salden(self, service_mit_zwei_konten):
+        # Act
+        with pytest.raises(RuntimeError):
+            service_mit_zwei_konten.einziehen(2, 1, Decimal("60.00"))
+
+        # Assert
+        assert (saldo_von(service_mit_zwei_konten, 1), saldo_von(service_mit_zwei_konten, 2)) == (
+            Decimal("100.00"),
+            Decimal("50.00"),
+        )
+
+    def test_einziehen_auf_dasselbe_konto_wirft_value_error(self, service_mit_zwei_konten):
+        # Act / Assert
+        with pytest.raises(ValueError):
+            service_mit_zwei_konten.einziehen(1, 1, Decimal("10.00"))
 
     def test_einziehen_von_unbekanntem_konto_wirft_value_error(self, service_mit_zwei_konten):
         # Act / Assert

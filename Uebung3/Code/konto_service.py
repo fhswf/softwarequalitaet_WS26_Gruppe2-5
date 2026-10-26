@@ -1,4 +1,4 @@
-#SNSK, PLRS
+# Implementiert von: SNSK, PLRS
 """
 KontoService - Verwaltung mehrerer Konten (Team B)
 
@@ -34,6 +34,15 @@ class KontoService(KontoServiceInterface):
 
     # ------------------------------------------------------------------
     # Interne Hilfsmethoden (Validierung)
+    #
+    # Hinweis zur doppelten Prüfung: Konto validiert Beträge und Saldo
+    # selbst. Die Prüfung im Service stammt aus der Zeit, in der noch mit
+    # DummyKonto gearbeitet wurde, und bleibt bewusst erhalten:
+    # - Sie läuft vor jeder Buchung, bevor überhaupt ein Konto angefasst
+    #   wird (fail fast). Bei Überweisungen wird so ein ungültiger Betrag
+    #   erkannt, bevor auszahlen() auf dem Quellkonto aufgerufen wird.
+    # - Der Service hängt dadurch nicht davon ab, wie streng eine
+    #   konkrete KontoInterface-Implementierung prüft.
     # ------------------------------------------------------------------
 
     @staticmethod
